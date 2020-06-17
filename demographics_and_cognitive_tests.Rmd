@@ -1,0 +1,99 @@
+---
+title: "Demographics and cognitive tests"
+author: "Bindoff, A."
+date: "17/06/2020"
+output: 
+  html_document:
+    code_folding: 'hide'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(table1)
+
+
+d0 <- readRDS('baseline_20200617.rds')
+long0 <- readRDS('thbp_7yr_long_20200617.rds')
+
+```
+
+## Demographics {.tabset}
+
+### Baseline
+
+Exclusions:  participants who nominated membership in intervention group who did not complete two or more university units (25% FTE), participants in control group who completed any university study after the study began, and any participants who were higher degree by research candidates (indicating recent university study).  
+
+
+```{r}
+table1(~age_1 + age_group + gender + all_courses_post2010_cp + wtar_fsiq + mhq_edschool + pcr | group,
+       d0,
+       render.continuous = c(.= "Mean (SD)", .= "Median [Q1, Q3]"),
+       overall = FALSE)
+```
+
+### At each assessment  
+
+```{r}
+
+
+table1(~age_1 + age_group + gender + group + pcr | title*phase_f,
+       group_by(long0, phase_f) %>% filter(!duplicated(idcode)),
+       overall = FALSE,
+       render.continuous = c(.= "Mean (SD)"))
+```
+
+
+## Cognitive tests
+
+```{r}
+
+test_names <- c(
+  `ravlt_t15_tot_z` = "RAVLT tot",
+  `ravlt_arcl_raw_z` = "RAVLT rcl",
+  `rcft_rcl_raw_z` = "RCFT",
+  `lmi_unit_tot_z` = "LMi",
+  `lmii_unit_tot_z` = "LMii",
+  `reversed_log_pal_te6_score_z` = "PAL te6",
+  `cowat_tot_z` = "COWAT",
+  `wais_ds_raw_z` = "WAIS ds",
+  `reversed_log_tmt_b_time_z` = "TMT-B",
+  `pal_ftm_score_z` = "PAL ftm",
+  `ssp_len_z` = "SSP length",
+  `ssp_te_z` = "SSP tot errors",
+  `reversed_log_swm_be_z` = "SWM be",
+  `reversed_log_stroop_c_time_z` = "STROOP C time",
+  `rvp_a_z` = "RVP-A",
+  `reversed_log_bnt_raw_z` = "BNT",
+  `wais_com_raw_z` = "WAIS comp",
+  `wais_lns_raw_z` = "WAIS lns",
+  `reversed_log_wais_voc_raw_z` = "WAIS voc",
+  `-1.1` = "55 years of age",
+  `0.3` = "65 years of age",
+  `1.7` = "75 years of age"
+)
+
+library(openxlsx)
+test_instruments <- read.xlsx("instrument_table_2.xlsx", sheet = 1)
+names(test_instruments) <- c("Label", "Instrument", "Cognitive function/s assessed", "References")
+
+gt::gt(test_instruments)
+
+```
+
+```{r}
+ggplot(dplyr::filter(long0, phase == 1), aes(x = age_1, y = value)) +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2)) +
+  scale_color_manual(values = c("orange3", "slategrey")) +
+  facet_wrap(~test, labeller = as_labeller(test_names)) +
+  xlab("Age (years)") +
+  ylab("Score (z)") +
+  theme_bw()
+
+
+```
+
