@@ -1,0 +1,87 @@
+---
+title: "Supplementary materials"
+author: "Bindoff, A."
+date: "17/06/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+```{r}
+library(dplyr)
+library(sjPlot)
+library(glmmTMB)
+library(lme4)
+
+long0 <- readRDS('thbp_7yr_long_20200617.rds')
+
+
+models <- readRDS("adj_unadj.rds")
+
+```
+
+## {.tabset}
+
+### Table S1. 
+
+
+```{r}
+car::Anova(models$m2.un)
+car::Anova(models$m2.adj)
+
+tab_model(models$m2.un, models$m2.adj, digits = 3, show.p = FALSE)
+
+
+```
+
+Experimental group trajectories for each cognitive test instrument, with and without adjustment for prior cognitive reserve and age. Reported p-values are taken from analysis of deviance tables. Tables of coefficients are also shown which include 95% confidence intervals.  
+
+
+### Table S2.
+
+```{r}
+library(emmeans)
+j <- emtrends(models$m2.adj, pairwise ~ group | test, var = "Time", show.levels = TRUE)
+j
+```
+
+Estimated marginal mean trends for experimental groups, adjusted for prior cognitive reserve and age.  
+
+
+### Table S3.  
+
+```{r}
+tab_model(models$m3.adj, digits = 3)
+```
+
+Three-way age x Time x group interaction, adjusted for prior cognitive reserve. 
+
+### Table S4.  
+
+```{r}
+car::Anova(models$m4.un, '2')
+tab_model(models$m4.un, digits = 3, show.p = FALSE)
+
+m4.adj <- lmer(Score ~ `Prior CR` + scale(age_1) + Time*test*scale(`Academic Load`) + (1|Participant), long0)
+car::Anova(m4.adj, '2')
+
+```
+
+Testing the association between academic load (in %FTE) and cognitive test-specific trajectories, adjusted for age and prior cognitive reserve.  
+
+### Table S5.  
+
+```{r}
+anova(models$m5.un)
+anova(models$m5.adj)
+
+tab_model(models$m5.un, models$m5.adj, digits = 3, show.p = FALSE)
+
+```
+
+Testing the association between prior cognitive reserve and experimental group trajectories, with and without adjusting for the main effect of age and the interaction between age and Time.  
+
+
+

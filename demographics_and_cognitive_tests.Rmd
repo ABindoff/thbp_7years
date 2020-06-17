@@ -48,6 +48,15 @@ table1(~age_1 + age_group + gender + group + pcr | title*phase_f,
 ```
 
 
+```{r}
+att_t6 <- round(1-(1+(308-485)/485)^(1/5),3)*100
+att_t8 <- round(1-(1+(149-485)/485)^(1/7),3)*100
+
+```
+
+Annualised attrition up to assessment at year 5 was `r att_t6`% *p.a.*, and counting incomplete assessments at year 7, `r att_t8`% *p.a.*.  
+
+
 ## Cognitive tests
 
 ```{r}
