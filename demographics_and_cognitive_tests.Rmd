@@ -90,8 +90,8 @@ library(openxlsx)
 test_instruments <- read.xlsx("instrument_table_2.xlsx", sheet = 1)
 names(test_instruments) <- c("Label", "Instrument", "Cognitive function/s assessed", "References")
 
-gt::gt(test_instruments)
-
+#gt::gt(test_instruments)
+sjPlot::tab_df(test_instruments)
 ```
 
 ```{r}
