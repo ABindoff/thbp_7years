@@ -1,9 +1,14 @@
 ---
 title: "Supplementary materials"
-author: "Bindoff, A."
-date: "17/06/2020"
-output: html_document
+author: "Bindoff, A. D., Summers, M. J., Hill, E., Alty, J., Vickers, J. C."
+date: "2020-06-17"
+output:
+  html_document: default
 ---
+
+Accompanies the article "Later-life education slows cognitive decline: a long-term prospective interventional study"  
+\
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
@@ -20,6 +25,26 @@ long0 <- readRDS('thbp_7yr_long_20200617.rds')
 
 models <- readRDS("adj_unadj.rds")
 
+tab_anova <- function(model, digits = 1, eps = .001){
+  sjPlot::tab_df(broom::tidy(car::Anova(model)) %>%
+                   dplyr::rename('Chi.sq' = statistic,
+                                 Term = term) %>%
+                   dplyr::mutate(p.value = format.pval(p.value, digits = digits, eps = eps)),
+                 digits = digits)
+}
+
+tab_F <- function(model, digits = 1, eps = .001){
+  sjPlot::tab_df(broom::tidy(anova(model)) %>%
+                   dplyr::rename('Term' = term,
+                                 'F' = statistic,
+                                 'num. df' = NumDF,
+                                 'denom. df' = DenDF,
+                                 'SS' = sumsq) %>%
+                   select(-meansq) %>%
+                   dplyr::mutate(p.value = format.pval(p.value, digits = digits, eps = eps)),
+                 digits = digits)
+}
+
 ```
 
 ## {.tabset}
@@ -28,16 +53,31 @@ models <- readRDS("adj_unadj.rds")
 
 
 ```{r}
-car::Anova(models$m2.un)
-car::Anova(models$m2.adj)
+tab_anova(models$m2.un)
+```
+  
+\
 
+  
+```{r}
+tab_anova(models$m2.adj)
+```
+  
+  
+\
+
+```{r}
 tab_model(models$m2.un, models$m2.adj, digits = 3, show.p = FALSE)
 
 
 ```
+\
 
+  
 Experimental group trajectories for each cognitive test instrument, with and without adjustment for prior cognitive reserve and age. Reported p-values are taken from analysis of deviance tables. Tables of coefficients are also shown which include 95% confidence intervals.  
-
+  
+   
+  
 
 ### Table S2.
 
@@ -46,7 +86,9 @@ library(emmeans)
 j <- emtrends(models$m2.adj, pairwise ~ group | test, var = "Time", show.levels = TRUE)
 j
 ```
+\
 
+  
 Estimated marginal mean trends for experimental groups, adjusted for prior cognitive reserve and age.  
 
 
@@ -55,33 +97,63 @@ Estimated marginal mean trends for experimental groups, adjusted for prior cogni
 ```{r}
 tab_model(models$m3.adj, digits = 3)
 ```
+\
 
-Three-way age x Time x group interaction, adjusted for prior cognitive reserve. 
+  
+  
+Three-way age x Time x group interaction, adjusted for prior cognitive reserve.  
+
 
 ### Table S4.  
 
 ```{r}
-car::Anova(models$m4.un, '2')
-tab_model(models$m4.un, digits = 3, show.p = FALSE)
+tab_anova(models$m4.un)
+```
+\
 
+     
+     
+```{r}
+tab_model(models$m4.un, digits = 3, show.p = FALSE)
+```
+\
+
+  
+```{r}
 m4.adj <- lmer(Score ~ `Prior CR` + scale(age_1) + Time*test*scale(`Academic Load`) + (1|Participant), long0)
-car::Anova(m4.adj, '2')
+tab_anova(m4.adj)
 
 ```
-
+\
+  
+  
+  
 Testing the association between academic load (in %FTE) and cognitive test-specific trajectories, adjusted for age and prior cognitive reserve.  
 
 ### Table S5.  
 
 ```{r}
-anova(models$m5.un)
-anova(models$m5.adj)
-
+tab_F(models$m5.un)
+```
+\
+  
+  
+  
+```{r}
+tab_F(models$m5.adj)
+```
+\
+  
+  
+  
+```{r}
 tab_model(models$m5.un, models$m5.adj, digits = 3, show.p = FALSE)
 
 ```
-
+\
+  
+  
+  
 Testing the association between prior cognitive reserve and experimental group trajectories, with and without adjusting for the main effect of age and the interaction between age and Time.  
-
-
-
+  
+  
