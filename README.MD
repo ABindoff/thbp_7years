@@ -1,6 +1,6 @@
 ### Later-life education slows cognitive decline: a long-term prospective interventional study
 Bindoff, A. D., Summers, M. J., Hill, E., Alty, J., Vickers, J. C.  
-submitted 18th June 2020  
+submitted 21 December 2020  
 
 
 Supplementary materials [right-click and 'Save As' to display in browser](https://raw.githubusercontent.com/ABindoff/thbp_7years/master/supplementary_materials.html)  

@@ -81,7 +81,7 @@ ggplot(p1, aes(x = Time, y = fit, ymin = lwr, ymax = upr, colour = group, group 
          fill = guide_legend(title = NULL)) +
   theme(legend.position = c(1, 0),
         legend.justification = c(0.93, 0)) 
-
+ggsave("fig1.svg")
 
 
 # Table S3
@@ -113,7 +113,7 @@ ggplot(p1 %>% filter(!age_at_baseline %in% c('60 years at baseline', '70 years a
   scale_color_manual(values = c("slategrey", "orange3"), name = "Group") +
   scale_fill_manual(values = c("slategrey", "orange3"), name = "Group") +
   theme(legend.position = "bottom")
-
+ggsave("fig2.svg")
 
 # Table S4
 m4.un <- glmmTMB::glmmTMB(value ~ Time*scale(`Academic Load`) + (1+Time|Participant), long0)
