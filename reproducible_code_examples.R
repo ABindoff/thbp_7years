@@ -24,14 +24,14 @@ m2.adj <- glmmTMB::glmmTMB(value ~ `Prior CR` + scale(age_1)*test + Time*test*gr
 
 # Table S2
 library(emmeans)
-emtrends(models$m2.adj, pairwise ~ group | test, var = "Time", show.levels = TRUE)
+emtrends(m2.adj, pairwise ~ group | test, var = "Time", show.levels = TRUE)
 
 # Figure 1
 p1 <- expand.grid(`Prior CR` = 0,
                   age_1 = 60.3,
                   group = c("Control", "Intervention"),
                   Time = c(0,1,2,3,5,7),
-                  test = unique(models$m2.adj$frame$test),
+                  test = unique(m2.adj$frame$test),
                   Participant = NA)
 p1$age_1 <- p1$age_1+p1$Time
 
@@ -66,6 +66,8 @@ test_names <- c(
   `1.7` = "75 years of age"
 )
 
+library(ggplot2)
+library(latex2exp)
 
 ggplot(p1, aes(x = Time, y = fit, ymin = lwr, ymax = upr, colour = group, group = group)) +
   facet_wrap(~test, labeller = as_labeller(test_names)) +
@@ -75,13 +77,13 @@ ggplot(p1, aes(x = Time, y = fit, ymin = lwr, ymax = upr, colour = group, group 
   theme_bw() +
   scale_color_manual(values = c("slategrey", "orange3")) +
   scale_fill_manual(values = c("slategrey", "orange3")) +
-  ylab("Score (z)") +
+  ylab(TeX("$\\widehat{Score\\,(z)}$")) +
   xlab("Time (years since baseline)") +
   guides(colour = guide_legend(title = NULL),
          fill = guide_legend(title = NULL)) +
   theme(legend.position = c(1, 0),
         legend.justification = c(0.93, 0)) 
-ggsave("fig1.svg")
+ggsave("fig1.pdf")
 
 
 # Table S3
@@ -108,12 +110,12 @@ ggplot(p1 %>% filter(!age_at_baseline %in% c('60 years at baseline', '70 years a
   geom_ribbon(aes(fill = group, colour = NULL), alpha = 0.2) +
   geom_line(size = 1) +
   theme_bw() +
-  ylab("Score (z)") +
+  ylab(TeX("$\\widehat{Score\\,(z)}$")) +
   xlab("Time (years since baseline)") +
   scale_color_manual(values = c("slategrey", "orange3"), name = "Group") +
   scale_fill_manual(values = c("slategrey", "orange3"), name = "Group") +
   theme(legend.position = "bottom")
-ggsave("fig2.svg")
+ggsave("fig2.pdf")
 
 # Table S4
 m4.un <- glmmTMB::glmmTMB(value ~ Time*scale(`Academic Load`) + (1+Time|Participant), long0)
