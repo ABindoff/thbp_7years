@@ -1,6 +1,7 @@
 library(dplyr)
 library(lme4)
 library(glmmTMB)
+library(sjPlot)
 
 long0 <- readRDS('thbp_7yr_long_20200617.rds')  # cognitive test score transformations detailed below
 
@@ -17,6 +18,18 @@ labs <- c("(Intercept)",
 tab_model(m1.un, m1.adj,
           digits = 3,
           pred.labels = labs)
+
+
+# test assumption of linearity
+plot(resid(m1.adj) ~ m1.adj@frame$`scale(age_1)`)
+
+# test assumption of normality of residuals
+qqnorm(resid(m1.adj))
+qqline(resid(m1.adj))
+
+# homogeneity of variance
+plot(m1.adj)
+
 
 # Table S1
 m2.un <- glmmTMB::glmmTMB(value ~ test*Time*group + (1+test|Participant), long0)
